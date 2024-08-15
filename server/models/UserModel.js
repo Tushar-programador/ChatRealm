@@ -1,4 +1,4 @@
-import {  genSaltSync, hashSync } from "bcrypt";
+import { compareSync, genSaltSync, hashSync } from "bcrypt";
 import mongoose from "mongoose";
 const userSchema = mongoose.Schema({
   email: {
@@ -37,5 +37,10 @@ userSchema.pre("save", function (next) {
   this.password = hashSync(this.password, salt);
   next();
 });
+userSchema.methods.matchPassword = function (pass) {
+  const auth = compareSync(pass, this.password);
+  return auth;
+};
+
 const User = mongoose.model("User", userSchema);
 export default User;

@@ -9,13 +9,90 @@ import {
 } from "../../components/ui/tabs";
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
+import { toast } from "sonner";
+import { apiClient } from "../../lib/api-client";
+import { loginRoute, signUpRoute } from "../../utils/constant";
 
 function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const handleSignup = async () => {};
-  const handleLogin = async () => {};
+
+  const validateSignup = () => {
+    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+
+    if (!email || !password || !confirmPassword) {
+      toast.error("Please enter the details ");
+      return false;
+    }
+    if (!emailRegex.test(email)) {
+      toast.error("Invalid email ");
+      return false;
+    }
+    if (password.length < 8) {
+      toast.error("Password must be at least 8 characters long");
+      return false;
+    }
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return false;
+    }
+
+    return true;
+  };
+  const validateLogin = () => {
+    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+
+    if (!email || !password || !confirmPassword) {
+      toast.error("Please enter the details ");
+      return false;
+    }
+    if (!emailRegex.test(email)) {
+      toast.error("Invalid email ");
+      return false;
+    }
+    if (password.length < 8) {
+      toast.error("Password must be at least 8 characters long");
+      return false;
+    }
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return false;
+    }
+
+    return true;
+  };
+  const handleSignup = async () => {
+    if (validateSignup()) {
+      const response = await apiClient.post(
+        signUpRoute,
+        {
+          email: email,
+          password: password,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      console.log(response.data);
+    }
+  };
+  const handleLogin = async () => {
+    if (validateLogin()) {
+      const response = await apiClient.post(
+        loginRoute,
+        {
+          email: email,
+          password: password,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+
+      console.log(response.data);
+    }
+  };
 
   return (
     <div className="h-screen w-full flex items-center justify-center bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 p-4">
@@ -61,6 +138,7 @@ function Auth() {
                 type="password"
                 className="rounded-full p-4"
                 value={password}
+                name="password"
                 onChange={(e) => setPassword(e.target.value)}
               />
               <Button
@@ -81,6 +159,7 @@ function Auth() {
               <Input
                 placeholder="Password"
                 type="password"
+                name="password"
                 className="rounded-full p-4"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

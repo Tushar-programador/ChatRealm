@@ -26,21 +26,18 @@ const userSchema = mongoose.Schema({
     type: Number,
     require: false,
   },
-  ProfileSetup: {
+  profileSetup: {
     type: Boolean,
     default: false,
   },
 });
 
 userSchema.pre("save", function (next) {
-  const salt = genSaltSync(10); //missing await
+  const salt = genSaltSync(10); 
   this.password = hashSync(this.password, salt);
   next();
 });
-userSchema.methods.matchPassword = function (pass) {
-  const auth = compareSync(pass, this.password);
-  return auth;
-};
+
 
 const User = mongoose.model("User", userSchema);
 export default User;

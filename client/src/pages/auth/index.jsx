@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Background from "../../assets/login2.png";
 import victory from "../../assets/victory.svg";
 import {
@@ -12,15 +13,16 @@ import { Button } from "../../components/ui/button";
 import { toast } from "sonner";
 import { apiClient } from "../../lib/api-client";
 import { loginRoute, signUpRoute } from "../../utils/constant";
+import { useAppStore } from "../../store";
 
 function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
+  const { setUserInfo } = useAppStore();
+  const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+  const navigate = useNavigate();
   const validateSignup = () => {
-    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-
     if (!email || !password || !confirmPassword) {
       toast.error("Please enter the details ");
       return false;
@@ -41,9 +43,7 @@ function Auth() {
     return true;
   };
   const validateLogin = () => {
-    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-
-    if (!email || !password || !confirmPassword) {
+    if (!email || !password) {
       toast.error("Please enter the details ");
       return false;
     }
@@ -55,10 +55,6 @@ function Auth() {
       toast.error("Password must be at least 8 characters long");
       return false;
     }
-    if (password !== confirmPassword) {
-      toast.error("Passwords do not match");
-      return false;
-    }
 
     return true;
   };
@@ -67,14 +63,19 @@ function Auth() {
       const response = await apiClient.post(
         signUpRoute,
         {
-          email: email,
-          password: password,
+          email,
+          password,
         },
         {
           withCredentials: true,
         }
       );
-      console.log(response.data);
+      console.log(response.data.user);
+      if (response.status === 201) {
+        setUserInfo(response.data.user);
+        navigate("/profile");
+      }
+      console.log(response);
     }
   };
   const handleLogin = async () => {
@@ -89,8 +90,14 @@ function Auth() {
           withCredentials: true,
         }
       );
+      console.log(response);
+      if (response.data.user.id) {
+        setUserInfo(response.data.user);
+        if (response.data.user.profileSetup) navigate("/chat");
+        else navigate("/profile");
+      }
 
-      console.log(response.data);
+      console.log(response);
     }
   };
 
@@ -132,6 +139,7 @@ function Auth() {
                 className="rounded-full p-4"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                name="email"
               />
               <Input
                 placeholder="Password"

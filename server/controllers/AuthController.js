@@ -27,13 +27,14 @@ export const registerController = async (req, res, next) => {
       expires: new Date(Date.now() + maxAge),
       profileSetup: user.profileSetup,
     });
-     return res.json({
+    console.log("succefully registered");
+    return res.status(201).json({
       message: "Register  successfully",
       user: {
         id: user.id,
         email: user.email,
-        
-      }});
+      },
+    });
   } catch (error) {
     return res.status(500).json({
       message: "Internal server error",
@@ -44,7 +45,10 @@ export const registerController = async (req, res, next) => {
 
 export const loginController = async (req, res, next) => {
   try {
+    console.log(req.body);
     const { email, password } = req.body;
+    console.log(email);
+    console.log(password);
     if (!email || !password) {
       return res.json({
         message: "Email and password required",
@@ -66,7 +70,7 @@ export const loginController = async (req, res, next) => {
         secure: true,
         profileSetup: user.profileSetup,
       })
-      .status(200);
+      .status(201);
     return res.json({
       message: "Logged in successfully",
       user: {
@@ -84,5 +88,66 @@ export const loginController = async (req, res, next) => {
       message: "Internal server error",
       error: e.message,
     });
+  }
+};
+
+export const getUserInfo = async (req, res) => {
+  try {
+    const userID = req.user.userId;
+    const user = await User.findById(userID);
+    if (!user) return res.status(404).send("User not found");
+
+    return res.status(200).json({
+      id: user._id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      image: user.image,
+      color: user.color,
+      profileSetup: user.profileSetup,
+    });
+  } catch (error) {
+    console.error("Error getting user info", error);
+    return null;
+  }
+};
+
+export const updateUserController = async (req, res) => {
+  try {
+    const userID = req.user.userId;
+
+    const { firstName, lastName, color } = req.body;
+
+    if (!firstName || !lastName || color === undefined) {
+      return res
+        .status(400)
+        .json({ message: "First name, last name, and color are required" });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      userID,
+      { firstName, lastName, color, profileSetup: true },
+      { new: true, runValidators: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    
+    return res.status(200).json({
+      message: "User updated successfully",
+      user: {
+        id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        color: user.color,
+        email: user.email,
+        profileSetup: user.profileSetup,
+      },
+    });
+  } catch (error) {
+    console.error("Error updating user", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };

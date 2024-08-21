@@ -10,12 +10,13 @@ app.use(
     methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
   })
 );
+
 app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
-app.use(express.static("public"));
 app.use(cookieParser());
 
 import authRoutes from "./routes/AuthRoutes.js";
+app.use("/uploads/profiles", express.static("/public/uploads"));
 app.use("/api/v1/auth", authRoutes);
 
 export { app };

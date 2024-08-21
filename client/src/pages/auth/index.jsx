@@ -70,7 +70,6 @@ function Auth() {
           withCredentials: true,
         }
       );
-      console.log(response.data.user);
       if (response.status === 201) {
         setUserInfo(response.data.user);
         navigate("/profile");

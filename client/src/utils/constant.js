@@ -5,3 +5,4 @@ export const signUpRoute = `${authRoute}/register`;
 export const loginRoute = `${authRoute}/login`;
 export const GET_USER_INFO = `${authRoute}/user-info`;
 export const UpdateUserInfo = `${authRoute}/update-user`;
+export const uploadProfileRoute = `${authRoute}/upload-profile`;

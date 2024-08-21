@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import User from "../models/UserModel.js";
 import { compareSync } from "bcrypt";
-
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
 const maxAge = 3 * 24 * 60 * 60 * 1000;
 const createToken = (email, userId) => {
   return jwt.sign({ email, userId }, process.env.JWT_KEY);
@@ -134,7 +134,6 @@ export const updateUserController = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    
     return res.status(200).json({
       message: "User updated successfully",
       user: {
@@ -149,5 +148,85 @@ export const updateUserController = async (req, res) => {
   } catch (error) {
     console.error("Error updating user", error);
     return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const deleteProfileController = async (req, res) => {
+  try {
+    // Retrieve the user from the database
+    const user = await User.findById(req.user.userid);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const imageUrl = user.profileImage;
+
+    if (imageUrl) {
+      // Extract public ID from the URL
+      const publicId = imageUrl.split("/").pop().split(".")[0];
+
+      // Delete the image from Cloudinary
+      await cloudinary.uploader.destroy(publicId);
+
+      // Remove the image URL from the user's profile
+      user.profileImage = null;
+      await user.save();
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Profile image deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error deleting profile image:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error deleting profile image",
+    });
+  }
+};
+
+export const uploadProfileController = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    // Upload the file to Cloudinary
+    const result = await uploadOnCloudinary(req.file.path);
+
+    if (!result) {
+      return res.status(500).json({ message: "Failed to upload image" });
+    }
+
+    const imageUrl = result.secure_url;
+
+    console.log("Image URL:", imageUrl);
+    console.log(req.user);
+
+    const updateResult = await User.findByIdAndUpdate(
+      req.user.userId, // Make sure this matches your actual user ID field
+      { profileImage: imageUrl },
+      { new: true } // Return the updated document
+    );
+
+    if (!updateResult) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    console.log("User updated successfully:", updateResult);
+
+    res.status(200).json({
+      success: true,
+      message: "Profile image uploaded successfully",
+      image: imageUrl,
+    });
+  } catch (error) {
+    console.error("Error uploading profile image:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error uploading profile image",
+    });
   }
 };

@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useAppStore } from "../../store";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { IoArrowBack } from "react-icons/io5";
 import { FaTrash, FaPlus } from "react-icons/fa";
 import { Avatar, AvatarImage } from "../../components/ui/avatar";
@@ -9,7 +9,7 @@ import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
 import { toast } from "sonner";
 import { apiClient } from "../../lib/api-client";
-import { UpdateUserInfo } from "../../utils/constant";
+import { UpdateUserInfo, uploadProfileRoute } from "../../utils/constant";
 
 function Profile() {
   const navigate = useNavigate();
@@ -19,6 +19,7 @@ function Profile() {
   const [image, setImage] = useState(null);
   const [hover, setHover] = useState(null);
   const [selectColor, setSelectColor] = useState(0);
+  const fileInputUpload = useRef(null);
 
   useEffect(() => {
     // Ensure that userInfo is properly loaded before setting state values
@@ -26,6 +27,7 @@ function Profile() {
       setFirstName(userInfo.firstName || "");
       setLastName(userInfo.lastName || "");
       setSelectColor(userInfo.color || 0);
+      setImage(userInfo.profileImage || null); // Load existing profile image if available
     }
   }, [userInfo]);
 
@@ -71,13 +73,54 @@ function Profile() {
       }
     }
   };
+
   const navigateback = () => {
     if (userInfo.profileSetup) {
       navigate("/chat");
     } else {
-      toast.error("setup your profile first");
+      toast.error("Set up your profile first");
     }
   };
+
+  const handleImageUpload = () => {
+    fileInputUpload.current.click();
+  };
+
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+
+    if (file) {
+      const formData = new FormData();
+      formData.append("profileImage", file);
+
+      try {
+        const response = await apiClient.post(uploadProfileRoute, formData, {
+          withCredentials: true,
+        });
+
+        if (response.status === 200 && response.data.image) {
+          setUserInfo({ ...userInfo, profileImage: response.data.image });
+          toast.success("Profile image updated successfully");
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          setImage(e.target.result); // Preview image
+        };
+        reader.readAsDataURL(file);
+      } catch (error) {
+        toast.error("Failed to upload image.");
+        console.error("Error uploading image:", error);
+      }
+    }
+  };
+
+  const handleImageDelete = async () => {
+    setImage(null);
+    setUserInfo({ ...userInfo, profileImage: null }); // Optionally remove image on the server
+    toast.success("Profile image removed successfully");
+  };
+
   return (
     <div className="bg-[#1b1c24] h-[100vh] flex items-center justify-center flex-col gap-10">
       <div className="flex flex-col gap-10 w-[80vw] md:max-w-[60vw]">
@@ -113,20 +156,26 @@ function Profile() {
               )}
             </Avatar>
             {hover && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full">
+              <div
+                className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full"
+                onClick={image ? handleImageDelete : handleImageUpload}
+              >
                 {image ? (
-                  <FaTrash
-                    className="text-white text-3xl cursor-pointer"
-                    onClick={() => setImage(null)}
-                  />
+                  <FaTrash className="text-white text-3xl cursor-pointer" />
                 ) : (
-                  <FaPlus
-                    className="text-white text-3xl cursor-pointer"
-                    // Add image upload logic here
-                  />
+                  <FaPlus className="text-white text-3xl cursor-pointer" />
                 )}
               </div>
             )}
+            <input
+              type="file"
+              name="profileImage"
+              id="profile"
+              ref={fileInputUpload}
+              onChange={handleImageChange}
+              className="hidden"
+              accept=".jpg,.jpeg,.png,.svg,.webp"
+            />
           </div>
           <div className="flex flex-col gap-5 text-white">
             <Input

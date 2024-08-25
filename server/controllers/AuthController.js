@@ -2,18 +2,17 @@ import jwt from "jsonwebtoken";
 import User from "../models/UserModel.js";
 import { compareSync } from "bcrypt";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import cloudinary from "cloudinary"
 const maxAge = 3 * 24 * 60 * 60 * 1000;
+
 const createToken = (email, userId) => {
   return jwt.sign({ email, userId }, process.env.JWT_KEY);
 };
 
-export const registerController = async (req, res, next) => {
+export const registerController = async (req, res) => {
   try {
-    console.log(req.body);
     const { email, password } = req.body;
 
-    console.log(email);
-    console.log(password);
     if (!email || !password) {
       return res.json({
         message: "Email and password required",
@@ -154,20 +153,28 @@ export const updateUserController = async (req, res) => {
 export const deleteProfileController = async (req, res) => {
   try {
     // Retrieve the user from the database
-    const user = await User.findById(req.user.userid);
+    console.log(1);
 
+    const user = await User.findById(req.user.userId);
+
+    console.log(2);
     if (!user) {
+      console.log(3);
       return res.status(404).json({ message: "User not found" });
     }
 
+    console.log(5);
     const imageUrl = user.profileImage;
+    console.log(6);
+    console.log("imageUrl");
+    console.log(imageUrl);
 
     if (imageUrl) {
       // Extract public ID from the URL
-      const publicId = imageUrl.split("/").pop().split(".")[0];
+      // const publicId = imageUrl.split("/").pop().split(".")[0];
 
       // Delete the image from Cloudinary
-      await cloudinary.uploader.destroy(publicId);
+      await cloudinary.uploader.destroy(imageUrl);
 
       // Remove the image URL from the user's profile
       user.profileImage = null;
@@ -202,9 +209,6 @@ export const uploadProfileController = async (req, res) => {
 
     const imageUrl = result.secure_url;
 
-    console.log("Image URL:", imageUrl);
-    console.log(req.user);
-
     const updateResult = await User.findByIdAndUpdate(
       req.user.userId, // Make sure this matches your actual user ID field
       { profileImage: imageUrl },
@@ -214,8 +218,6 @@ export const uploadProfileController = async (req, res) => {
     if (!updateResult) {
       return res.status(404).json({ message: "User not found" });
     }
-
-    console.log("User updated successfully:", updateResult);
 
     res.status(200).json({
       success: true,

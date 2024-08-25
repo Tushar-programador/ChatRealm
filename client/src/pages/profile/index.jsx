@@ -9,7 +9,12 @@ import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
 import { toast } from "sonner";
 import { apiClient } from "../../lib/api-client";
-import { UpdateUserInfo, uploadProfileRoute } from "../../utils/constant";
+import {
+  deleteProfileRoute,
+  UpdateUserInfo,
+  uploadProfileRoute,
+} from "../../utils/constant";
+
 
 function Profile() {
   const navigate = useNavigate();
@@ -97,9 +102,10 @@ function Profile() {
         const response = await apiClient.post(uploadProfileRoute, formData, {
           withCredentials: true,
         });
-
         if (response.status === 200 && response.data.image) {
+          
           setUserInfo({ ...userInfo, profileImage: response.data.image });
+      
           toast.success("Profile image updated successfully");
         }
 
@@ -117,8 +123,13 @@ function Profile() {
 
   const handleImageDelete = async () => {
     setImage(null);
-    setUserInfo({ ...userInfo, profileImage: null }); // Optionally remove image on the server
-    toast.success("Profile image removed successfully");
+    const response = await apiClient.delete(deleteProfileRoute, {
+      withCredentials: true,
+    });
+    if (response.status === 200 && response.body) {
+      setUserInfo({ ...userInfo, profileImage: null }); // Optionally remove image on the server
+      toast.success("Profile image removed successfully");
+    }
   };
 
   return (

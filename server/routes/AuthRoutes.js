@@ -16,8 +16,8 @@ authRoutes.post("/register", registerController);
 authRoutes.post("/login", loginController);
 authRoutes.get("/user-info", verifyToken, getUserInfo);
 authRoutes.post("/update-user", verifyToken, updateUserController);
-authRoutes.post("/upload-profile", verifyToken,upload.single("profileImage"),  uploadProfileController);
-authRoutes.delete("/upload-profile",deleteProfileController);
+authRoutes.post("/upload-profile", verifyToken,upload.single("profileImage"),uploadProfileController);
+authRoutes.delete("/delete-profile",verifyToken,deleteProfileController);
 
 
 export default authRoutes;

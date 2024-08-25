@@ -1,5 +1,6 @@
-import { compareSync, genSaltSync, hashSync } from "bcrypt";
+import {  genSaltSync, hashSync } from "bcrypt";
 import mongoose from "mongoose";
+
 const userSchema = mongoose.Schema({
   email: {
     type: String,

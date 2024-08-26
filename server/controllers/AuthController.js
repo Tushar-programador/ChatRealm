@@ -232,3 +232,13 @@ export const uploadProfileController = async (req, res) => {
     });
   }
 };
+
+export const logoutController = async(req, res) => {
+  try {
+    res.clearCookie("auth");
+    return res.status(200).json({ message: "Logged out successfully" });
+  } catch (error) {
+    console.error("Error logging out:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}

@@ -154,6 +154,12 @@ function Auth() {
               >
                 Login
               </Button>
+              <button
+                onClick={() => navigate("/forgot-password")}
+                className="text-sm text-blue-500 hover:underline mt-2"
+              >
+                Forgot Password?
+              </button>
             </TabsContent>
             <TabsContent className="flex flex-col gap-4 mt-6" value="signup">
               <Input

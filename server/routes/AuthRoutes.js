@@ -21,4 +21,8 @@ authRoutes.post("/upload-profile", verifyToken,upload.single("profileImage"),upl
 authRoutes.delete("/delete-profile",verifyToken,deleteProfileController);
 authRoutes.post("/logout",logoutController);
 
+authRoutes.put("/reset-password/:resetToken", resetPasswordController);
+
+authRoutes.post("/forgot-password",);
+
 export default authRoutes;

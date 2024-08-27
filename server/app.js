@@ -16,7 +16,9 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(cookieParser());
 
 import authRoutes from "./routes/AuthRoutes.js";
+import contactRoutes from "./routes/ContactRoutes.js";
+
 app.use("/uploads/profiles", express.static("/public/uploads"));
 app.use("/api/v1/auth", authRoutes);
-
+app.use("/api/v1/contact", contactRoutes);
 export { app };

@@ -2,7 +2,9 @@ import jwt from "jsonwebtoken";
 import User from "../models/UserModel.js";
 import { compareSync } from "bcrypt";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
-import cloudinary from "cloudinary"
+import cloudinary from "cloudinary";
+import crypto from "crypto";
+import nodemailer from "nodemailer";
 const maxAge = 3 * 24 * 60 * 60 * 1000;
 
 const createToken = (email, userId) => {
@@ -233,7 +235,7 @@ export const uploadProfileController = async (req, res) => {
   }
 };
 
-export const logoutController = async(req, res) => {
+export const logoutController = async (req, res) => {
   try {
     res.clearCookie("auth");
     return res.status(200).json({ message: "Logged out successfully" });
@@ -241,4 +243,78 @@ export const logoutController = async(req, res) => {
     console.error("Error logging out:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
-}
+};
+export const resetPasswordController = async (req, res) => {
+  const resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(req.params.resetToken)
+    .digest("hex");
+
+  try {
+    const user = await User.findOne({
+      resetPasswordToken,
+      resetPasswordExpire: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid or expired token" });
+    }
+
+    user.password = req.body.password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+    await user.save();
+
+    res.status(200).json({ message: "Password reset successful" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+ export const forgetPassword =  async (req, res) => {
+   const { email } = req.body;
+
+   try {
+     const user = await User.findOne({ email });
+     if (!user) {
+       return res.status(404).json({ message: "User not found" });
+     }
+
+     // Generate a reset token
+     const resetToken = crypto.randomBytes(32).toString("hex");
+     const resetPasswordToken = crypto
+       .createHash("sha256")
+       .update(resetToken)
+       .digest("hex");
+     const resetPasswordExpire = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+     user.resetPasswordToken = resetPasswordToken;
+     user.resetPasswordExpire = resetPasswordExpire;
+     await user.save();
+
+     // Send reset link via email
+     const resetUrl = `${req.protocol}://${req.get(
+       "host"
+     )}/reset-password/${resetToken}`;
+
+     const transporter = nodemailer.createTransport({
+       service: "Gmail",
+       auth: {
+         user: process.env.EMAIL, // Your email
+         pass: process.env.EMAIL_PASSWORD, // Your email password
+       },
+     });
+
+     const mailOptions = {
+       to: user.email,
+       from: process.env.EMAIL,
+       subject: "Password Reset Request",
+       text: `You have requested a password reset. Please make a put request to: \n\n ${resetUrl}`,
+     };
+
+     await transporter.sendMail(mailOptions);
+
+     res.status(200).json({ message: "Password reset link sent" });
+   } catch (error) {
+     res.status(500).json({ message: error.message });
+   }
+ };

@@ -6,6 +6,8 @@ import { useAppStore } from "@/store";
 import { useEffect, useState } from "react";
 import { apiClient } from "./lib/api-client";
 import { GET_USER_INFO } from "./utils/constant";
+import ForgotPassword from "./pages/forget-passwword/ForgetPasssword";
+import ResetPassword from "./pages/forget-passwword/ResetPassword";
 
 //eslint-disable-next-line
 const PrivateRoute = ({ children }) => {
@@ -84,7 +86,8 @@ function App() {
             </PrivateRoute>
           }
         />
-
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:resetToken" element={<ResetPassword />} />
         <Route path="*" element={<Navigate to="/auth" />} />
       </Routes>
     </BrowserRouter>

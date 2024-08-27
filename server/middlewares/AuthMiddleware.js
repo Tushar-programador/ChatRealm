@@ -4,8 +4,7 @@ export const verifyToken = (req, res, next) => {
   try {
     // Extract the token from cookies
     const token = req.cookies.auth; 
-    console.log("token");
-    console.log(token);
+    
     
     // Corrected spelling and added 'auth' key to extract the correct token
     if (!token) {

@@ -127,8 +127,8 @@ function Profile() {
 
   useEffect(() => {
     setImage(userInfo.profileImage);
-    console.log(userInfo);
-  }, [userInfo]);
+    console.log("image uploaded and set");
+  }, [userInfo, image]);
 
   const handleImageDelete = async () => {
     setImage(null);

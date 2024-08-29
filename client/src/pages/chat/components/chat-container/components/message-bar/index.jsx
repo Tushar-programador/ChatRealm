@@ -3,11 +3,15 @@ import { GrAttachment } from "react-icons/gr";
 import { RiEmojiStickerLine } from "react-icons/ri";
 import { IoSend } from "react-icons/io5";
 import EmojiPicker from "emoji-picker-react";
+import { useAppStore } from "../../../../../../store";
+import { useSocket } from "../../../../../../context/socketContext";
 
 function MessageBar() {
   const emojiRef = useRef();
+  const socket = useSocket();
   const [showEmoji, setShowEmoji] = useState(false);
   const [message, setMessage] = useState("");
+  const { selectedChatData, userInfo } = useAppStore();
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -19,17 +23,25 @@ function MessageBar() {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [emojiRef]);
+  }, []);
 
   const handleEmoji = (emoji) => {
-    setMessage((message) => message + emoji.emoji);
+    setMessage((prev) => prev + emoji.emoji);
   };
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = () => {
     if (message.trim()) {
-      // Add logic to send the message here
-      console.log("Message sent:", message);
-      setMessage(""); // Clear the input field after sending the message
+      if (socket && selectedChatData) {
+        socket.emit("sendMessage", {
+          sender: userInfo.id,
+          receiver: selectedChatData._id,
+          message: message,
+          messageType: "text",
+          fileUrl: undefined,
+        });
+        console.log("Message sent:", message);
+        setMessage(""); // Clear the input after sending
+      }
     }
   };
 

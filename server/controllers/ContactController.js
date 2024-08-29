@@ -2,15 +2,14 @@ import User from "../models/UserModel.js";
 
 export const SearchContactController = async (req, res) => {
   try {
-    console.log("SearchContactController is available");
 
     const { searchTerm } = req.body;
-    console.log(searchTerm);
+    
 
     if (!searchTerm || searchTerm.trim() === "") {
       return res.status(400).json({ message: "Search text is required" });
     }
-    console.log(3);
+ 
 
     const sanitizeSearch = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const regex = new RegExp(sanitizeSearch, "i");

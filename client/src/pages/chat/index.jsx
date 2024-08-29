@@ -8,7 +8,7 @@ import ChatContainer from "./components/chat-container";
 function Chat() {
   const { userInfo, selectedChatType, selectedChatData } = useAppStore();
   const navigate = useNavigate();
-  useEffect(() => { 
+  useEffect(() => {
     if (!userInfo.profileSetup) {
       toast("Please setup your profile before logging in");
       navigate("/profile");
@@ -22,7 +22,7 @@ function Chat() {
         console.log("selectedChatType:", selectedChatType) // Uncomment this line to see the selected chat type in the console
       }
       {
-        console.log("selectedChatType:", selectedChatData) // Uncomment this line to see the selected chat type in the console
+        console.log("selectedChatData:", selectedChatData) // Uncomment this line to see the selected chat type in the console
       }
 
       {selectedChatType == "contact" ? (

@@ -1,3 +1,11 @@
+import { useState, useCallback } from "react";
+import { CONTACT_ROUTES } from "../../../../../../utils/constant";
+import { apiClient } from "@/lib/api-client";
+import { useAppStore } from "../../../../../../store";
+import { Avatar, AvatarImage } from "../../../../../../components/ui/avatar";
+import Lottie from "react-lottie";
+import { FaPlus } from "react-icons/fa";
+
 import {
   Dialog,
   DialogContent,
@@ -6,7 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
-import Lottie from "react-lottie";
+
 import { Animation } from "@/lib/utils";
 import {
   Tooltip,
@@ -14,44 +22,47 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useState, useCallback } from "react";
-import { FaPlus } from "react-icons/fa";
-import { CONTACT_ROUTES } from "../../../../../../utils/constant";
-import { apiClient } from "@/lib/api-client";
+
+import { getcolors } from "../../../../../../lib/utils";
 
 function NewDM() {
+  const { setSelectedChatType, setSelectedChatData } = useAppStore();
   const [openNewContactModel, setOpenContactModel] = useState(false);
   const [searchContact, setSearchContact] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const handleSearchContact = useCallback(
-    async (searchTerm) => {
-      if (searchTerm.trim().length === 0) {
-        setSearchContact([]);
-        return;
+  const seacrchContact = useCallback(async (searchTerm) => {
+    if (searchTerm.trim().length === 0) {
+      setSearchContact([]);
+      return;
+    }
+    try {
+      setLoading(true);
+      const response = await apiClient.post(
+        CONTACT_ROUTES,
+        { searchTerm: searchTerm },
+        { withCredentials: true }
+      );
+      if (response.status === 200 && response.data) {
+        setSearchContact(response.data);
       }
+    } catch (error) {
+      console.error("Error searching for contacts:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-      try {
-        setLoading(true);
-        const response = await apiClient.post(
-          CONTACT_ROUTES,
-          { searchTerm },
-          {
-            withCredentials: true,
-          }
-        );
-        if (response.status === 200 && response.data) {
-          setSearchContact(response.data.contacts || []);
-        }else{
-            setSearchContact(setSearchContact([]))
-        }
-      } catch (error) {
-        console.error("Error searching for contacts:", error);
-      } finally {
-        setLoading(false);
-      }
+  const selectNewContact = useCallback(
+    (contact) => {
+      console.log(1);
+
+      setOpenContactModel(false);
+      setSelectedChatData(contact);
+      setSelectedChatType("contact");
+      setSearchContact([]);
     },
-    [setSearchContact]
+    [setSelectedChatType, setSelectedChatData]
   );
 
   return (
@@ -77,7 +88,7 @@ function NewDM() {
           </DialogHeader>
 
           <Input
-            onChange={(e) => handleSearchContact(e.target.value)}
+            onChange={(e) => seacrchContact(e.target.value)}
             placeholder="Search Contacts"
             className="rounded-lg p-4 bg-[#2c2e3b] border-none mb-4"
           />
@@ -110,33 +121,46 @@ function NewDM() {
               </div>
             </div>
           ) : (
-            <ScrollArea className="h-12 w-12 rounded-full overflow-hidden">
-            {
-                searchContact.map((contact) => (
+            <ScrollArea className="h-[250px]">
+              <div className="flex flex-col gap-5">
+                {searchContact.map((contact) => (
                   <div
-                    key={contact.id}
-                    onClick={() => {
-                      // Add new DM logic here
-                    }}
-                    className="flex gap-3 items-center justify-between px-10 py-3 hover:bg-[#222329] transition-all duration-300"
+                    key={contact._id}
+                    className="flex gap-3 items-center cursor-pointer"
+                    onClick={() => selectNewContact(contact)}
                   >
-                    <img
-                      src={contact.image}
-                      alt="contact"
-                      className="h-12 w-12 rounded-full object-cover"
-                    />
-                    <div className="flex flex-col gap-2">
-                      <h3 className="text-white poppins-medium">{contact.name}</h3>
-                      <p className="text-opacity-80 text-white poppins-light">
-                        {contact.lastMessage?.text}
+                    <div className="w-12 h-12 relative">
+                      <Avatar className="h-12 w-12 rounded-full overflow-hidden">
+                        {contact.profileImage ? (
+                          <AvatarImage
+                            src={contact.profileImage}
+                            alt="profile image"
+                            className="object-cover h-full w-full bg-black"
+                          />
+                        ) : (
+                          <div
+                            className={`uppercase h-12 w-12 text-lg border-[1px] flex items-center justify-center rounded-full ${getcolors(
+                              contact.color
+                            )}`}
+                          >
+                            {contact.firstName
+                              ? contact.firstName.charAt(0)
+                              : contact.email.charAt(0) || "U"}
+                          </div>
+                        )}
+                      </Avatar>
+                    </div>
+                    <div>
+                      <p className="text-white">
+                        {contact.firstName
+                          ? `${contact.firstName} ${contact.lastName || ""}`
+                          : contact.email}
                       </p>
+                      <span className="text-xs">{contact.email}</span>
                     </div>
                   </div>
-                ))
-
-  
-            }
-             
+                ))}
+              </div>
             </ScrollArea>
           )}
         </DialogContent>

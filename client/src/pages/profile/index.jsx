@@ -15,7 +15,6 @@ import {
   uploadProfileRoute,
 } from "../../utils/constant";
 
-
 function Profile() {
   const navigate = useNavigate();
   const { userInfo, setUserInfo } = useAppStore();
@@ -102,13 +101,18 @@ function Profile() {
         const response = await apiClient.post(uploadProfileRoute, formData, {
           withCredentials: true,
         });
+
         if (response.status === 200 && response.data.image) {
-          
+          // Directly update the image in both states for immediate reflection
+
           setUserInfo({ ...userInfo, profileImage: response.data.image });
-      
+          setImage(response.data.image); // Update the image for immediate preview
+          // Update the image on the server as well
           toast.success("Profile image updated successfully");
+          console.log(userInfo);
         }
 
+        // Preview the image while it's being uploaded
         const reader = new FileReader();
         reader.onload = (e) => {
           setImage(e.target.result); // Preview image
@@ -120,6 +124,11 @@ function Profile() {
       }
     }
   };
+
+  useEffect(() => {
+    setImage(userInfo.profileImage);
+    console.log(userInfo);
+  }, [userInfo]);
 
   const handleImageDelete = async () => {
     setImage(null);

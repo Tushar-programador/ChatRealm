@@ -22,6 +22,7 @@ function Auth() {
   const { setUserInfo } = useAppStore();
   const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
   const navigate = useNavigate();
+
   const validateSignup = () => {
     if (!email || !password || !confirmPassword) {
       toast.error("Please enter the details ");
@@ -78,6 +79,8 @@ function Auth() {
     }
   };
   const handleLogin = async () => {
+    console.log(1);
+
     if (validateLogin()) {
       const response = await apiClient.post(
         loginRoute,
@@ -89,6 +92,7 @@ function Auth() {
           withCredentials: true,
         }
       );
+      console.log("response");
       console.log(response);
       if (response.data.user.id) {
         setUserInfo(response.data.user);

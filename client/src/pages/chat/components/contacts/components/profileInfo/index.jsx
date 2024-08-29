@@ -16,6 +16,7 @@ import { logoutRoute } from "../../../../../../utils/constant";
 function ProfileInfo() {
   const navigate = useNavigate();
   const { userInfo, setUserInfo } = useAppStore();
+
   const handleLogout = async () => {
     try {
       const response = await apiClient.post(
@@ -38,9 +39,9 @@ function ProfileInfo() {
     <div className="absolute bottom-0 h-20 flex items-center justify-between px-4 sm:px-6 md:px-10 w-full bg-[#2a2b33]">
       <div className="flex items-center gap-3">
         <Avatar className="h-12 w-12 rounded-full overflow-hidden">
-          {userInfo.image ? (
+          {userInfo.profileImage ? (
             <AvatarImage
-              src={userInfo.image}
+              src={userInfo.profileImage} // Ensure this matches what was set in handleImageChange
               alt="profile image"
               className="object-cover h-full w-full bg-black"
             />

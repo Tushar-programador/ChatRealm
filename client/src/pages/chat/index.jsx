@@ -3,12 +3,12 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import Contacts from "./components/contacts";
-// import EmptyChatContainer from "./components/empty-contact-container";
+import EmptyChatContainer from "./components/empty-contact-container";
 import ChatContainer from "./components/chat-container";
 function Chat() {
-  const { userInfo } = useAppStore();
+  const { userInfo, selectedChatType, selectedChatData } = useAppStore();
   const navigate = useNavigate();
-  useEffect(() => {
+  useEffect(() => { 
     if (!userInfo.profileSetup) {
       toast("Please setup your profile before logging in");
       navigate("/profile");
@@ -18,9 +18,18 @@ function Chat() {
   return (
     <div className="flex h-[100vh] text-white overflow-hidden">
       <Contacts />
-      {/* <EmptyChatContainer /> */}
-      <ChatContainer />
-     
+      {
+        console.log("selectedChatType:", selectedChatType) // Uncomment this line to see the selected chat type in the console
+      }
+      {
+        console.log("selectedChatType:", selectedChatData) // Uncomment this line to see the selected chat type in the console
+      }
+
+      {selectedChatType == "contact" ? (
+        <ChatContainer />
+      ) : (
+        <EmptyChatContainer />
+      )}
     </div>
   );
 }

@@ -28,6 +28,8 @@ authRoutes.post(
 authRoutes.delete("/delete-profile", verifyToken, deleteProfileController);
 authRoutes.post("/logout", logoutController);
 
+
+// Forget Password
 authRoutes.put("/reset-password/:resetToken", resetPasswordController);
 
 authRoutes.post("/forgot-password", forgetPassword);

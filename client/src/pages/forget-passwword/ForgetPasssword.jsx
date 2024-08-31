@@ -4,6 +4,7 @@ import { apiClient } from "../../lib/api-client";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
+import { forgetpasswordsRoute } from "../../utils/constant";
 
 function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -11,7 +12,12 @@ function ForgotPassword() {
 
   const handleForgotPassword = async () => {
     try {
-      const response = await apiClient.post("/forgot-password", { email });
+      console.log(email);
+      console.log(forgetpasswordsRoute);
+
+      const response = await apiClient.post(forgetpasswordsRoute, {
+        email,
+      });
       if (response.status === 200) {
         toast.success("Password reset link sent to your email.");
         navigate("/auth");

@@ -8,6 +8,7 @@ export const UpdateUserInfo = `${authRoute}/update-user`;
 export const uploadProfileRoute = `${authRoute}/upload-profile`;
 export const deleteProfileRoute = `${authRoute}/delete-profile`;
 export const logoutRoute = `${authRoute}/logout`;
+export const forgetpasswordsRoute = `${authRoute}/forgot-password`;
 
 const contactRoutes = "api/v1/contact";
 export const CONTACT_ROUTES = `${contactRoutes}/search`;

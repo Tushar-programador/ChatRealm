@@ -46,9 +46,8 @@ export const registerController = async (req, res) => {
 
 export const loginController = async (req, res, next) => {
   try {
-   
     const { email, password } = req.body;
- 
+
     if (!email || !password) {
       return res.json({
         message: "Email and password required",
@@ -260,60 +259,61 @@ export const resetPasswordController = async (req, res) => {
     }
 
     user.password = req.body.password;
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpire = undefined;
+    // user.resetPasswordToken = undefined;
+    // user.resetPasswordExpire = undefined;
     await user.save();
-
+// 
     res.status(200).json({ message: "Password reset successful" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
- export const forgetPassword =  async (req, res) => {
-   const { email } = req.body;
+export const forgetPassword = async (req, res) => {
+  console.log(req.body);
+  const { email } = req.body;
 
-   try {
-     const user = await User.findOne({ email });
-     if (!user) {
-       return res.status(404).json({ message: "User not found" });
-     }
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-     // Generate a reset token
-     const resetToken = crypto.randomBytes(32).toString("hex");
-     const resetPasswordToken = crypto
-       .createHash("sha256")
-       .update(resetToken)
-       .digest("hex");
-     const resetPasswordExpire = Date.now() + 10 * 60 * 1000; // 10 minutes
+    // Generate a reset token
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const resetPasswordToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
+    const resetPasswordExpire = Date.now() + 10 * 60 * 1000; // 10 minutes
 
-     user.resetPasswordToken = resetPasswordToken;
-     user.resetPasswordExpire = resetPasswordExpire;
-     await user.save();
+    user.resetPasswordToken = resetPasswordToken;
+    user.resetPasswordExpire = resetPasswordExpire;
+    await user.save();
 
-     // Send reset link via email
-     const resetUrl = `${req.protocol}://${req.get(
-       "host"
-     )}/reset-password/${resetToken}`;
+    // Send reset link via email
+    const resetUrl = `${req.protocol}://${req.get(
+      "host"
+    )}/reset-password/${resetToken}`;
 
-     const transporter = nodemailer.createTransport({
-       service: "Gmail",
-       auth: {
-         user: process.env.EMAIL, // Your email
-         pass: process.env.EMAIL_PASSWORD, // Your email password
-       },
-     });
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
 
-     const mailOptions = {
-       to: user.email,
-       from: process.env.EMAIL,
-       subject: "Password Reset Request",
-       text: `You have requested a password reset. Please make a put request to: \n\n ${resetUrl}`,
-     };
+    const mailOptions = {
+      to: user.email,
+      from: process.env.EMAIL,
+      subject: "Password Reset Request",
+      text: `You have requested a password reset. Please make a put request to: \n\n ${resetUrl}`,
+    };
 
-     await transporter.sendMail(mailOptions);
+    await transporter.sendMail(mailOptions);
 
-     res.status(200).json({ message: "Password reset link sent" });
-   } catch (error) {
-     res.status(500).json({ message: error.message });
-   }
- };
+    res.status(200).json({ message: "Password reset link sent" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

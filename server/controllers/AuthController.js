@@ -5,6 +5,7 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import cloudinary from "cloudinary";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
+
 const maxAge = 3 * 24 * 60 * 60 * 1000;
 
 const createToken = (email, userId) => {
@@ -14,7 +15,7 @@ const createToken = (email, userId) => {
 export const registerController = async (req, res) => {
   try {
     const { email, password } = req.body;
-
+ 
     if (!email || !password) {
       return res.json({
         message: "Email and password required",
@@ -262,7 +263,7 @@ export const resetPasswordController = async (req, res) => {
     // user.resetPasswordToken = undefined;
     // user.resetPasswordExpire = undefined;
     await user.save();
-// 
+    //
     res.status(200).json({ message: "Password reset successful" });
   } catch (error) {
     res.status(500).json({ message: error.message });

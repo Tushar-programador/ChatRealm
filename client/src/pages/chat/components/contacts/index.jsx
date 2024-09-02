@@ -1,7 +1,20 @@
+import { GET_CONTACT_ROUTES } from "../../../../utils/constant";
 import NewDM from "./components/newDM";
 import ProfileInfo from "./components/profileInfo";
+import { apiClient } from "../../../../lib/api-client";
+import { useEffect } from "react";
 
 function Contacts() {
+  useEffect(() => {
+    const getUserContact = async () => {
+      const response = await apiClient.get(GET_CONTACT_ROUTES, {
+        withCredentials: true,
+      });
+      console.log("Contqct all");
+      console.log(response);
+    };
+    getUserContact();
+  }, []);
   return (
     <div className="relative md:w-[35vw] lg:w-[30vw] xl:w-[30vw] bg-[#1b1c24] border-r-2 border-[#2f303b] w-full">
       <div className="pt-3">

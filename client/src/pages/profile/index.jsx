@@ -96,7 +96,6 @@ function Profile() {
     if (file) {
       const formData = new FormData();
       formData.append("profileImage", file);
-
       try {
         const response = await apiClient.post(uploadProfileRoute, formData, {
           withCredentials: true,

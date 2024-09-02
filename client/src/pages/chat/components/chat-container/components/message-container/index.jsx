@@ -1,10 +1,38 @@
 import { useRef, useEffect } from "react";
 import { useAppStore } from "../../../../../../store";
 import moment from "moment";
+import { apiClient } from "../../../../../../lib/api-client";
+import { GET_MESSAGES } from "../../../../../../utils/constant";
 
 function MessageContainer() {
   const scrollRef = useRef();
-  const { selectedChatMessage, selectedChatData } = useAppStore();
+  const {
+    selectedChatMessage,
+    selectedChatData,
+    selectedChatType,
+    setSelectedChatMessage,
+  } = useAppStore();
+
+  useEffect(() => {
+    const getAllMessages = async () => {
+      try {
+        const response = await apiClient.post(
+          GET_MESSAGES,
+          { id: selectedChatData?._id }, // Use optional chaining here
+          { withCredentials: true }
+        );
+        if (response.status === 200 && Array.isArray(response.data.messages)) {
+          setSelectedChatMessage(response.data.messages);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    if (selectedChatData?._id && selectedChatType === "contact") {
+      getAllMessages();
+    }
+  }, [selectedChatData, setSelectedChatMessage, selectedChatType]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -16,48 +44,55 @@ function MessageContainer() {
     let lastDate = null;
 
     return selectedChatMessage.map((message, index) => {
-      const messageDate = moment(message.timestamp).format("YYYY-MM-DD");
+      // Use optional chaining to prevent errors
+
+      const messageDate = moment(message.createdAt).format("YYYY-MM-DD");
+
       const showDate = messageDate !== lastDate;
+
       lastDate = messageDate;
 
       return (
         <div key={index}>
           {showDate && (
             <div className="text-center text-gray-500 my-2">
-              {moment(message.timestamp).format("LL")}
+              {moment(message.createdAt).format("LL")}
             </div>
           )}
+
           {renderDMMesaage(message)}
         </div>
       );
     });
   };
 
-  const renderDMMesaage = (message) => {
-    const isSender = message.message.sender._id !== selectedChatData._id;
+  const renderDMMesaage = (messageObj) => {
+    const message = messageObj.message || messageObj; // Use messageObj directly if messageObj is the message
 
-    console.log("isSender   " + isSender);
-    console.log("message.sender._id   " + message.message.sender._id);
-    console.log("selectedChatData._id   " + selectedChatData._id);
+    // Check if message or message content is undefined
+    if (!message || !message.content) {
+      console.log("Skipping a message due to undefined content", messageObj);
+      return null;
+    }
+
+    const isSender = message.sender !== selectedChatData?._id;
+    // console.log(message.sender._id);
+    // console.log(selectedChatData._id);
+    console.log(isSender);
+
     return (
-      <div
-        className={`  ${
-          message.message.sender._id !== selectedChatData._id
-            ? " text-right"
-            : " text-left"
-        }`}
-      >
+      <div className={` ${isSender ? "text-right" : "text-left"}`}>
         <div
           className={`${
             isSender
-              ? "bg-[#2a2b33]/5 text-white/80 border-[#ffffff]/20"
-              : "bg-[#8417ff]/5 text-[#8417ff]/90 border-[#8417ff]"
+              ? "bg-[#8417ff]/5 text-[#8417ff]/90 border-[#8417ff]"
+              : "bg-[#2a2b33]/5 text-white/80 border-[#ffffff]/20"
           } border inline-block p-4 rounded my-1 max-w-[70%] break-words`}
         >
-          {message.message.content}
+          {message.content}
         </div>
         <div className="text-xs text-gray-500 ml-5 mt-1">
-          {moment(message.timestamp).format("LT")}
+          {moment(message.createdAt).format("LT")}
         </div>
       </div>
     );

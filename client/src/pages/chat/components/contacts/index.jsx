@@ -3,15 +3,21 @@ import NewDM from "./components/newDM";
 import ProfileInfo from "./components/profileInfo";
 import { apiClient } from "../../../../lib/api-client";
 import { useEffect } from "react";
+import { useAppStore } from "../../../../store";
+import ContactList from "../../../../components/ui/contact-list";
 
 function Contacts() {
+  const { directMessageContact, setDirectMessageContact } = useAppStore();
   useEffect(() => {
     const getUserContact = async () => {
       const response = await apiClient.get(GET_CONTACT_ROUTES, {
         withCredentials: true,
       });
-      console.log("Contqct all");
-      console.log(response);
+      if (response.status === 200 && response.data) {
+        console.log("Contqct all");
+        setDirectMessageContact(response.data); // Update the direct message contact list in the store when the contacts are fetched from the API.
+        console.log(response.data);
+      }
     };
     getUserContact();
   }, []);
@@ -23,6 +29,9 @@ function Contacts() {
       <div className="flex items-center justify-between pr-10">
         <Title text="Direct Messages" />
         <NewDM />
+      </div>
+      <div className=" max-h-[38vh]  overflow-y-auto scrollbar-hidden">
+        <ContactList contacts = {directMessageContact}/>
       </div>
       <div className="flex items-center justify-start pr-10">
         <Title text="Channels" />

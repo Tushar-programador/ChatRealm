@@ -11,27 +11,36 @@ function ChatHeader() {
       <div className="flex items-center gap-4 w-full justify-between">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 relative">
-            <Avatar className="h-12 w-12 rounded-full overflow-hidden">
-              {selectedChatData?.profileImage ? (
-                <AvatarImage
-                  src={selectedChatData.profileImage}
-                  alt="profile image"
-                  className="object-cover h-full w-full bg-black"
-                />
-              ) : (
-                <div
-                  className={`uppercase h-12 w-12 text-lg border-[1px] flex items-center justify-center rounded-full ${getcolors(
-                    selectedChatData?.color
-                  )}`}
-                >
-                  {selectedChatData?.firstName
-                    ? selectedChatData.firstName.charAt(0)
-                    : selectedChatData?.email.charAt(0) || "U"}
-                </div>
-              )}
-            </Avatar>
+            {selectedChatType === "contact" ? (
+              <Avatar className="h-12 w-12 rounded-full overflow-hidden">
+                {selectedChatData?.profileImage ? (
+                  <AvatarImage
+                    src={selectedChatData.profileImage}
+                    alt="profile image"
+                    className="object-cover h-full w-full bg-black"
+                  />
+                ) : (
+                  <div
+                    className={`uppercase h-12 w-12 text-lg border-[1px] flex items-center justify-center rounded-full ${getcolors(
+                      selectedChatData?.color
+                    )}`}
+                  >
+                    {selectedChatData?.firstName
+                      ? selectedChatData.firstName.charAt(0)
+                      : selectedChatData?.email.charAt(0) || "U"}
+                  </div>
+                )}
+              </Avatar>
+            ) : (
+              <div
+                className={`h-12 w-12 flex items-center justify-center rounded-full `}
+              >
+                #
+              </div>
+            )}
           </div>
           <div className="text-white font-medium">
+            {selectedChatType === "channel" && selectedChatData.name}
             {selectedChatType === "contact" && selectedChatData?.firstName
               ? `${selectedChatData.firstName} ${
                   selectedChatData?.lastName || ""

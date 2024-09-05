@@ -15,12 +15,14 @@ app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(cookieParser());
 
-import authRoutes from "./routes/AuthRoutes.js";
-import contactRoutes from "./routes/ContactRoutes.js";
+import authRouter from "./routes/AuthRoutes.js";
+import contactRouter from "./routes/ContactRoutes.js";
 import messageRouter from "./routes/MessageRoutes.js";
+import channelRouter from "./routes/channelRoutes.js";
 
 app.use("/uploads/profiles", express.static("/public/uploads"));
-app.use("/api/v1/auth", authRoutes);
-app.use("/api/v1/contact", contactRoutes);
+app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/contact", contactRouter);
 app.use("/api/v1/message", messageRouter);
+app.use("/api/v1/channel", channelRouter);
 export { app };

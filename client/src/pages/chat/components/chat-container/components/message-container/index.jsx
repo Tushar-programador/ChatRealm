@@ -3,6 +3,7 @@ import { useAppStore } from "../../../../../../store";
 import moment from "moment";
 import { apiClient } from "../../../../../../lib/api-client";
 import { GET_MESSAGES } from "../../../../../../utils/constant";
+import styles from "./MessageContainer.module.css";
 
 function MessageContainer() {
   const scrollRef = useRef();
@@ -45,11 +46,8 @@ function MessageContainer() {
 
     return selectedChatMessage.map((message, index) => {
       // Use optional chaining to prevent errors
-
       const messageDate = moment(message.createdAt).format("YYYY-MM-DD");
-
       const showDate = messageDate !== lastDate;
-
       lastDate = messageDate;
 
       return (
@@ -59,7 +57,6 @@ function MessageContainer() {
               {moment(message.createdAt).format("LL")}
             </div>
           )}
-
           {renderDMMesaage(message)}
         </div>
       );
@@ -76,8 +73,6 @@ function MessageContainer() {
     }
 
     const isSender = message.sender !== selectedChatData?._id;
-    // console.log(message.sender._id);
-    // console.log(selectedChatData._id);
     console.log(isSender);
 
     return (
@@ -99,7 +94,9 @@ function MessageContainer() {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto scrollbar-hidden p-4 px-8 md:w-[65vw] lg:w-[70vw] xl:w-[80vw] w-full">
+    <div
+      className={`${styles.customScrollbar} flex-1 overflow-y-auto  p-4 px-8 md:w-[65vw] lg:w-[70vw] xl:w-[80vw] w-full1`}
+    >
       {renderMessage()}
       <div ref={scrollRef} />
     </div>

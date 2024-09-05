@@ -1,6 +1,6 @@
 export const HOST = import.meta.env.VITE_SERVER_URL;
 
-// Auth Route 
+// Auth Route
 const authRoute = "api/v1/auth";
 export const signUpRoute = `${authRoute}/register`;
 export const loginRoute = `${authRoute}/login`;
@@ -15,8 +15,16 @@ export const forgetpasswordsRoute = `${authRoute}/forgot-password`;
 const contactRoutes = "api/v1/contact";
 export const CONTACT_ROUTES = `${contactRoutes}/search`;
 export const GET_CONTACT_ROUTES = `${contactRoutes}/get-contact`;
-
+export const GET_ALL_CONTACT_ROUTES = `${contactRoutes}/get-all-contacts`;
 
 // Message Route
 const messageRoutes = "api/v1/message";
-export const GET_MESSAGES = `${messageRoutes}/get-messages`; 
+export const GET_MESSAGES = `${messageRoutes}/get-messages`;
+
+//Channel Route
+const channelRoutes = "api/v1/channel";
+export const GET_CHANNELS = `${channelRoutes}/get-channels`;
+export const CREATE_CHANNEL = `${channelRoutes}/create-channel`;
+export const JOIN_CHANNEL = `${channelRoutes}/join-channel`;
+export const LEAVE_CHANNEL = `${channelRoutes}/leave-channel`;
+export const GET_CHANNEL_MEMBERS = `${channelRoutes}/get-channel-members`;

@@ -28,9 +28,9 @@ export const SearchContactController = async (req, res) => {
   }
 };
 
-export const getContactsController = async (req, res) => {
+export const getUserContactsController = async (req, res) => {
   try {
-    let userID = req.user.userId;
+    let userID = req.user.userId
     console.log(req.user.userId);
     if (!userID) {
       return res.status(404).json({ message: "User not found." });
@@ -90,3 +90,24 @@ export const getContactsController = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+export const getAllContactsController = async (req, res) => {
+  try {
+    const userID = req.user.userId; // Get the current user's ID
+    const users = await User.find(
+      { _id: { $ne: userID } },
+      "firstName lastName _id email"
+    ); // Find all users except the current user
+
+    // Map over the users to create the contacts array
+    const contacts = users.map((user) => ({
+      label: user.firstName ? `${user.firstName} ${user.lastName}` : user.email, // Set the label to full name or email
+      value: user._id, // Set the value to the user's ID
+    }));
+
+    return res.status(200).json({contacts}); // Return the contacts as a JSON response
+  } catch (error) {
+    return res.status(500).json({ message: error.message }); // Handle any errors
+  }
+};
+

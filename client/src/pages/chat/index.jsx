@@ -6,7 +6,7 @@ import Contacts from "./components/contacts";
 import EmptyChatContainer from "./components/empty-contact-container";
 import ChatContainer from "./components/chat-container";
 function Chat() {
-  const { userInfo, selectedChatType, selectedChatData } = useAppStore();
+  const { userInfo, selectedChatType } = useAppStore();
   const navigate = useNavigate();
   useEffect(() => {
     if (!userInfo.profileSetup) {
@@ -18,12 +18,6 @@ function Chat() {
   return (
     <div className="flex h-[100vh] text-white overflow-hidden">
       <Contacts />
-      {
-        console.log("selectedChatType:", selectedChatType) // Uncomment this line to see the selected chat type in the console
-      }
-      {
-        console.log("selectedChatData:", selectedChatData) // Uncomment this line to see the selected chat type in the console
-      }
 
       {selectedChatType == "contact" ? (
         <ChatContainer />

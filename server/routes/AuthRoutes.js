@@ -13,25 +13,24 @@ import {
 import { verifyToken } from "../middlewares/AuthMiddleware.js";
 import { upload } from "../middlewares/multerMiddleware.js";
 
-const authRoutes = Router();
+const authRouter = Router();
 
-authRoutes.post("/register", registerController);
-authRoutes.post("/login", loginController);
-authRoutes.get("/user-info", verifyToken, getUserInfo);
-authRoutes.post("/update-user", verifyToken, updateUserController);
-authRoutes.post(
+authRouter.post("/register", registerController);
+authRouter.post("/login", loginController);
+authRouter.get("/user-info", verifyToken, getUserInfo);
+authRouter.post("/update-user", verifyToken, updateUserController);
+authRouter.post(
   "/upload-profile",
   verifyToken,
   upload.single("profileImage"),
   uploadProfileController
 );
-authRoutes.delete("/delete-profile", verifyToken, deleteProfileController);
-authRoutes.post("/logout", logoutController);
-
+authRouter.delete("/delete-profile", verifyToken, deleteProfileController);
+authRouter.post("/logout", logoutController);
 
 // Forget Password
-authRoutes.put("/reset-password/:resetToken", resetPasswordController);
+authRouter.put("/reset-password/:resetToken", resetPasswordController);
 
-authRoutes.post("/forgot-password", forgetPassword);
+authRouter.post("/forgot-password", forgetPassword);
 
-export default authRoutes;
+export default authRouter;

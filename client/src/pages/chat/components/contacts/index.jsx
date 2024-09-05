@@ -1,26 +1,41 @@
-import { GET_CONTACT_ROUTES } from "../../../../utils/constant";
+import { GET_CHANNELS, GET_CONTACT_ROUTES } from "../../../../utils/constant";
 import NewDM from "./components/newDM";
 import ProfileInfo from "./components/profileInfo";
 import { apiClient } from "../../../../lib/api-client";
 import { useEffect } from "react";
 import { useAppStore } from "../../../../store";
-import ContactList from "../../../../components/ui/contact-list";
+
+import { ContactList } from "/src/components/ui/contact-list.jsx";
+import CreateChannel from "./components/create-channel";
 
 function Contacts() {
-  const { directMessageContact, setDirectMessageContact } = useAppStore();
+  const {
+    directMessageContact,
+    setDirectMessageContact,
+    channels,
+    setChannels,
+  } = useAppStore();
   useEffect(() => {
     const getUserContact = async () => {
       const response = await apiClient.get(GET_CONTACT_ROUTES, {
         withCredentials: true,
       });
       if (response.status === 200 && response.data) {
-        console.log("Contqct all");
         setDirectMessageContact(response.data); // Update the direct message contact list in the store when the contacts are fetched from the API.
-        console.log(response.data);
+      }
+    };
+    const getChannel = async () => {
+      const response = await apiClient.get(GET_CHANNELS, {
+        withCredentials: true,
+      });
+
+      if (response.status === 200 && response.data) {
+        setChannels(response.data.channels);
       }
     };
     getUserContact();
-  }, []);
+    getChannel();
+  }, [setChannels, setDirectMessageContact]);
   return (
     <div className="relative md:w-[35vw] lg:w-[30vw] xl:w-[30vw] bg-[#1b1c24] border-r-2 border-[#2f303b] w-full">
       <div className="pt-3">
@@ -31,10 +46,14 @@ function Contacts() {
         <NewDM />
       </div>
       <div className=" max-h-[38vh]  overflow-y-auto scrollbar-hidden">
-        <ContactList contacts = {directMessageContact}/>
+        <ContactList contacts={directMessageContact} />
       </div>
-      <div className="flex items-center justify-start pr-10">
+      <div className="flex items-center justify-between pr-10">
         <Title text="Channels" />
+        <CreateChannel/>
+      </div>
+      <div className=" max-h-[38vh]  overflow-y-auto scrollbar-hidden">
+        <ContactList contacts={channels} isChannel={true} />
       </div>
       <ProfileInfo />
     </div>
@@ -70,7 +89,7 @@ const Logo = () => {
           fill="#a16ee8"
         ></path>
       </svg>
-      <span className="text-3xl font-semibold">Syncronus</span>
+      <span className="text-3xl font-semibold">Chat Realm</span>
     </div>
   );
 };

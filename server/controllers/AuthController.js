@@ -15,7 +15,7 @@ const createToken = (email, userId) => {
 export const registerController = async (req, res) => {
   try {
     const { email, password } = req.body;
- 
+
     if (!email || !password) {
       return res.json({
         message: "Email and password required",
@@ -94,15 +94,15 @@ export const loginController = async (req, res, next) => {
 export const getUserInfo = async (req, res) => {
   try {
     const userID = req.user.userId;
-    const user = await User.findById(userID);
+    const user = await User.findById(userID).populate();
     if (!user) return res.status(404).send("User not found");
-
+    console.log(user);
     return res.status(200).json({
       id: user._id,
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
-      image: user.image,
+      profileImage: user.profileImage,
       color: user.color,
       profileSetup: user.profileSetup,
     });
@@ -114,6 +114,8 @@ export const getUserInfo = async (req, res) => {
 
 export const updateUserController = async (req, res) => {
   try {
+    console.log(1);
+
     const userID = req.user.userId;
 
     const { firstName, lastName, color } = req.body;
@@ -128,7 +130,7 @@ export const updateUserController = async (req, res) => {
       userID,
       { firstName, lastName, color, profileSetup: true },
       { new: true, runValidators: true }
-    );
+    ).select("-password");
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -154,27 +156,23 @@ export const updateUserController = async (req, res) => {
 export const deleteProfileController = async (req, res) => {
   try {
     // Retrieve the user from the database
-    console.log(1);
+  
 
     const user = await User.findById(req.user.userId);
 
-    console.log(2);
+  
     if (!user) {
-      console.log(3);
+      
       return res.status(404).json({ message: "User not found" });
     }
 
-    console.log(5);
+  
     const imageUrl = user.profileImage;
-    console.log(6);
-    console.log("imageUrl");
-    console.log(imageUrl);
+   
+  
 
     if (imageUrl) {
-      // Extract public ID from the URL
-      // const publicId = imageUrl.split("/").pop().split(".")[0];
-
-      // Delete the image from Cloudinary
+      
       await cloudinary.uploader.destroy(imageUrl);
 
       // Remove the image URL from the user's profile

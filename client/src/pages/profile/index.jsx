@@ -63,12 +63,13 @@ function Profile() {
           },
           { withCredentials: true }
         );
-
+        console.log("Profile saved successfully");
         if (response.status === 200 && response.data) {
           setUserInfo({ ...response.data.user });
           toast.success(response.data.message);
           navigate("/chat");
         } else {
+          console.log(response);
           toast.error(response.data.message || "Failed to update profile");
         }
       } catch (error) {

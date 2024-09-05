@@ -3,13 +3,19 @@ export const createChatSlice = (set, get) => ({
   selectedChatData: undefined,
   selectedChatMessage: [],
   directMessageContact: [],
+  channels: [],
 
   // Setters
+  setChannels: (channels) => set({ channels }),
   setSelectedChatType: (selectedChatType) => set({ selectedChatType }),
   setSelectedChatData: (selectedChatData) => set({ selectedChatData }),
   setSelectedChatMessage: (selectedChatMessage) => set({ selectedChatMessage }),
   setDirectMessageContact: (directMessageContact) =>
     set({ directMessageContact }),
+  addChannel: (channel) => {
+    const channels = get().channels;
+    set({ channels: [...channels, channel] });
+  },
   // Reset all state when closing chat
   closeChat: () =>
     set({

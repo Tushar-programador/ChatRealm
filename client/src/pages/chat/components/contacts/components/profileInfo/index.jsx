@@ -16,7 +16,11 @@ import { logoutRoute } from "../../../../../../utils/constant";
 function ProfileInfo() {
   const navigate = useNavigate();
   const { userInfo, setUserInfo } = useAppStore();
+  console.log("userInfo in profile");
+  console.log(userInfo);
 
+
+  
   const handleLogout = async () => {
     try {
       const response = await apiClient.post(

@@ -3,9 +3,9 @@ import { useAppStore } from "../../../../../../store";
 import moment from "moment";
 import { apiClient } from "../../../../../../lib/api-client";
 import { GET_MESSAGES } from "../../../../../../utils/constant";
-import styles from "./MessageContainer.module.css";
+// import styles from "./MeessageContainer.module.css";
 
-function MessageContainer() {
+function MeessageContainer() {
   const scrollRef = useRef();
   const {
     selectedChatMessage,
@@ -40,7 +40,7 @@ function MessageContainer() {
     if (scrollRef.current) {
       scrollRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [selectedChatMessage]);
+  }, [selectedChatMessage, setSelectedChatMessage]);
 
   const renderMessage = () => {
     let lastDate = null;
@@ -64,35 +64,6 @@ function MessageContainer() {
     });
   };
 
-  // const renderDMMesaage = (messageObj) => {
-  //   const message = messageObj.message || messageObj; // Use messageObj directly if messageObj is the message
-
-  //   // Check if message or message content is undefined
-  //   if (!message || !message.content) {
-  //     console.log("Skipping a message due to undefined content", messageObj);
-  //     return null;
-  //   }
-
-  //   const isSender = message.sender !== selectedChatData?._id;
-  //   console.log(isSender);
-
-  //   return (
-  //     <div className={` ${isSender ? "text-right" : "text-left"}`}>
-  //       <div
-  //         className={`${
-  //           isSender
-  //             ? "bg-[#8417ff]/5 text-[#8417ff]/90 border-[#8417ff]"
-  //             : "bg-[#2a2b33]/5 text-white/80 border-[#ffffff]/20"
-  //         } border inline-block p-4 rounded my-1 max-w-[70%] break-words`}
-  //       >
-  //         {message.content}
-  //       </div>
-  //       <div className="text-xs text-gray-500 ml-5 mt-1">
-  //         {moment(message.createdAt).format("LT")}
-  //       </div>
-  //     </div>
-  //   );
-  // };
   const renderDMMesaage = (messageObj) => {
     const message = messageObj.message || messageObj; // Use messageObj directly if messageObj is the message
 
@@ -101,19 +72,21 @@ function MessageContainer() {
       console.log("Skipping a message due to undefined content", messageObj);
       return null;
     }
-
-    // Fetch the logged-in user ID (assuming it's stored in your store or context)
-    // const { userInfo } = useAppStore(); // Assuming `userInfo` contains the logged-in user details
-    const isSender = message.sender === userInfo._id; // Check if the logged-in user is the sender
+    console.log("userInfo");
+    console.log(userInfo);
 
     return (
-      <div className={` ${isSender ? "text-right" : "text-left"}`}>
+      <div
+        className={` ${
+          message.sender._id === userInfo.id ? "text-right" : "text-left"
+        }`}
+      >
         <div
           className={`${
-            isSender
+            message.sender._id === userInfo.id
               ? "bg-[#8417ff]/5 text-[#8417ff]/90 border-[#8417ff]"
               : "bg-[#2a2b33]/5 text-white/80 border-[#ffffff]/20"
-          } border inline-block p-4 rounded my-1 max-w-[70%] break-words`}
+          } border inline-block p-4 rounded my-1 max-w-[50%] break-words`}
         >
           {message.content}
         </div>
@@ -126,7 +99,7 @@ function MessageContainer() {
 
   return (
     <div
-      className={`${styles.customScrollbar} flex-1 overflow-y-auto  p-4 px-8 md:w-[65vw] lg:w-[70vw] xl:w-[80vw] w-full1`}
+      className={` flex-1 overflow-y-auto  p-4 px-8 md:w-[65vw] lg:w-[70vw] xl:w-[80vw] w-full1`}
     >
       {renderMessage()}
       <div ref={scrollRef} />
@@ -134,4 +107,4 @@ function MessageContainer() {
   );
 }
 
-export default MessageContainer;
+export default MeessageContainer;

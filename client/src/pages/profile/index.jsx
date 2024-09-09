@@ -102,15 +102,17 @@ function Profile() {
           withCredentials: true,
         });
 
-        if (response.status === 200 && response.data.image) {
-          // Directly update the image in both states for immediate reflection
-
+        if (response.status === 200 && response.data) {
+          console.log("image",response.data.image);
           setUserInfo({ ...userInfo, profileImage: response.data.image });
+
+          console.log(userInfo);
           setImage(response.data.image); // Update the image for immediate preview
           // Update the image on the server as well
           toast.success("Profile image updated successfully");
-          console.log(userInfo);
         }
+        console.log("img link");
+        console.log(response.data);
 
         // Preview the image while it's being uploaded
         const reader = new FileReader();

@@ -155,24 +155,15 @@ export const updateUserController = async (req, res) => {
 
 export const deleteProfileController = async (req, res) => {
   try {
-    // Retrieve the user from the database
-  
-
     const user = await User.findById(req.user.userId);
 
-  
     if (!user) {
-      
       return res.status(404).json({ message: "User not found" });
     }
 
-  
     const imageUrl = user.profileImage;
-   
-  
 
     if (imageUrl) {
-      
       await cloudinary.uploader.destroy(imageUrl);
 
       // Remove the image URL from the user's profile
@@ -217,7 +208,7 @@ export const uploadProfileController = async (req, res) => {
     if (!updateResult) {
       return res.status(404).json({ message: "User not found" });
     }
-
+    console.log(imageUrl);
     res.status(200).json({
       success: true,
       message: "Profile image uploaded successfully",
@@ -258,8 +249,8 @@ export const resetPasswordController = async (req, res) => {
     }
 
     user.password = req.body.password;
-    // user.resetPasswordToken = undefined;
-    // user.resetPasswordExpire = undefined;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
     await user.save();
     //
     res.status(200).json({ message: "Password reset successful" });

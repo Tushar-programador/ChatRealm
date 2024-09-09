@@ -6,13 +6,13 @@ import { useEffect } from "react";
 import { useAppStore } from "../../../../store";
 
 import { ContactList } from "/src/components/ui/contact-list.jsx";
-import CreateChannel from "./components/create-channel";
+// import CreateChannel from "./components/create-channel";
 
 function Contacts() {
   const {
     directMessageContact,
     setDirectMessageContact,
-    channels,
+    // channels,
     setChannels,
   } = useAppStore();
   useEffect(() => {
@@ -45,16 +45,16 @@ function Contacts() {
         <Title text="Direct Messages" />
         <NewDM />
       </div>
-      <div className=" max-h-[38vh]  overflow-y-auto scrollbar-hidden">
+      <div className=" max-h-[60vh]  overflow-y-auto scrollbar-hidden">
         <ContactList contacts={directMessageContact} />
       </div>
-      <div className="flex items-center justify-between pr-10">
+      {/* <div className="flex items-center justify-between pr-10">
         <Title text="Channels" />
         <CreateChannel/>
       </div>
       <div className=" max-h-[38vh]  overflow-y-auto scrollbar-hidden">
         <ContactList contacts={channels} isChannel={true} />
-      </div>
+      </div> */}
       <ProfileInfo />
     </div>
   );

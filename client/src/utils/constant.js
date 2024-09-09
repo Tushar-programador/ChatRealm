@@ -1,4 +1,4 @@
-export const HOST = import.meta.env.VITE_SERVER_URL;
+export const HOST = "https://chatrealm-server.onrender.com";
 
 // Auth Route
 const authRoute = "api/v1/auth";

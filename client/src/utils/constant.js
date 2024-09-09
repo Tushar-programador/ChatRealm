@@ -1,4 +1,4 @@
-export const HOST = "https://chatrealm-server.onrender.com";
+export const HOST = `https://chatrealm-server.onrender.com`;
 
 // Auth Route
 const authRoute = "api/v1/auth";
